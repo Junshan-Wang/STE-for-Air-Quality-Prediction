@@ -28,6 +28,9 @@ Implement a novel and effective spatial-temporal ensemble model for air quality 
 	- SE.m: Only spatial and ensemble parts.
 	- STE.m: Spatial-temporal ensemble model.
 	
+Reliance:
+1. [libsvm](https://www.csie.ntu.edu.tw/~cjlin/libsvm/) 
+	
 Reference:
 
 1. [Prediction as a candidate for learning deep hierarchical models of data](http://www2.imm.dtu.dk/pubdb/views/publication_details.php?id=6284) (Palm, 2012)

@@ -1,4 +1,4 @@
-% ËÄ¸öLSTM£¬¸ù¾İÊ±¼äĞòÁĞ»®·ÖÌìÆøÄ£Ê½ by fcmean£¬¿Õ¼äÑ¡ÔñÒ²²»Í¬£¬»Ø¹é²ãÏßĞÔ»Ø¹é£¯SVM£¬¿Õ¼ä¹ØÁªÎªgg
+% å››ä¸ªLSTMï¼Œæ ¹æ®æ—¶é—´åºåˆ—åˆ’åˆ†å¤©æ°”æ¨¡å¼ by fcmeanï¼Œç©ºé—´é€‰æ‹©ä¹Ÿä¸åŒï¼Œå›å½’å±‚çº¿æ€§å›å½’ï¼SVMï¼Œç©ºé—´å…³è”ä¸ºgg
 
 clear all;
 clc;
@@ -6,33 +6,33 @@ clc;
 load air_bj.mat;
 %%%%%%%%%%%%%%%%%%%%%%
 numTimeDelay=[5];
-inputPolluents=[1 2 3 4 5];     %ÊäÈë¹ıÈ¥ÎÛÈ¾ÎïÊı¾İ
-outputPolluents=6;                  %Êä³öPM2.5
-weatherFactors=[7 8 9 10];      %ÊäÈëÎ´À´ÌìÆøÔ¤²â
+inputPolluents=[1 2 3 4 5];     %è¾“å…¥è¿‡å»æ±¡æŸ“ç‰©æ•°æ®
+outputPolluents=6;                  %è¾“å‡ºPM2.5
+weatherFactors=[7 8 9 10];      %è¾“å…¥æœªæ¥å¤©æ°”é¢„æµ‹
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Ô¤²âÕ¾µã %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% é¢„æµ‹ç«™ç‚¹ %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 count=1;
 for iTimeDelay=1:length(numTimeDelay)
 for iStation=1
 outputStations=iStation
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Ô¤²â¶àÉÙÌìÒÔºó %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% é¢„æµ‹å¤šå°‘å¤©ä»¥å %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 timeDelay=numTimeDelay(iTimeDelay);  
 range=timeDelay+1;
 trainingLength=2400;
-%%%%%%%%%%%%%%%%%%%%%%%%% ²ÎÊı %%%%%%%%%%%%%%%%%%%%%%%%%%%%
-K=4;                            % ¸ù¾İÌìÆøÒòËØ·ÖÀàµÄÀà±ğÊı
-lag=40;                         % Ñù±¾ĞòÁĞ³¤¶È
-M=floor(trainingLength/lag);    % Ñù±¾ĞòÁĞÊı
-adj=5;                          % Ïà¹ØÕ¾µãÊıÁ¿
-adjMatrix=zeros(K,adj);         % ËÄ¸öÑµÁ·×Ó¼¯µÄÏà¹ØÕ¾µã
-numDir=4;                       % ¿Õ¼äÏà¹ØÇøÓòÊıÁ¿
+%%%%%%%%%%%%%%%%%%%%%%%%% å‚æ•° %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+K=4;                            % æ ¹æ®å¤©æ°”å› ç´ åˆ†ç±»çš„ç±»åˆ«æ•°
+lag=40;                         % æ ·æœ¬åºåˆ—é•¿åº¦
+M=floor(trainingLength/lag);    % æ ·æœ¬åºåˆ—æ•°
+adj=5;                          % ç›¸å…³ç«™ç‚¹æ•°é‡
+adjMatrix=zeros(K,adj);         % å››ä¸ªè®­ç»ƒå­é›†çš„ç›¸å…³ç«™ç‚¹
+numDir=4;                       % ç©ºé—´ç›¸å…³åŒºåŸŸæ•°é‡
 
 inputSize=range*length(inputPolluents)+range*length(outputPolluents)*adj+3*adj*length(weatherFactors)+numDir*(range*length(outputPolluents)+length(weatherFactors));    
 outputSize=1;
 
-%%%%%%%%%%%%%%%%% ¸ù¾İÌìÆøÒòËØ½«Ñù±¾ĞòÁĞ·ÖÀà %%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%% æ ¹æ®å¤©æ°”å› ç´ å°†æ ·æœ¬åºåˆ—åˆ†ç±» %%%%%%%%%%%%%%%%
 
 wx=air_bj{outputStations}(1+timeDelay+range:trainingLength+timeDelay+range,weatherFactors);
 wy=air_bj{outputStations}(1+timeDelay+range:trainingLength+timeDelay+range,outputPolluents);
@@ -43,10 +43,10 @@ for iLag=1:M
         fStatistic(iLag,i)=F;
     end
 end
-[u,centers]=fcmeans2(fStatistic,K);     % u:Ã¿¸öÑù±¾ĞòÁĞÊäÈëÃ¿¸öÀàµÄ¸ÅÂÊ¾ØÕó
-second_x=[];    % »Ø¹é²ãµÄÊäÈë
+[u,centers]=fcmeans2(fStatistic,K);     % u:æ¯ä¸ªæ ·æœ¬åºåˆ—è¾“å…¥æ¯ä¸ªç±»çš„æ¦‚ç‡çŸ©é˜µ
+second_x=[];    % å›å½’å±‚çš„è¾“å…¥
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% ×ÓÄ£ĞÍ %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% å­æ¨¡å‹ %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 for kSub=1:K
     
 index=[];
@@ -57,7 +57,7 @@ for i=1:M
 end
 subTrainingLength=length(index);
 
-%%%%%%%%%%%%%%%%% ¿Õ¼äÏà¹ØÕ¾µãºÍÏà¹ØÇøÓò»ñÈ¡ %%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%% ç©ºé—´ç›¸å…³ç«™ç‚¹å’Œç›¸å…³åŒºåŸŸè·å– %%%%%%%%%%%%%%%%
 Kernel=zeros(35,1);
 for i=1:35
 	%Kernel(i)=abs(pdist2(air_bj{outputStations}(:,6)',air_bj{i}(:,outputPolluents)','correlation'));
@@ -85,7 +85,7 @@ for i=1:numDir
         end
     end
 end
-%%%%%%%%%%%%%%%%%%% ¹¹ÔìÑµÁ·ÊäÈëÊä³ö¾ØÕó %%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%% æ„é€ è®­ç»ƒè¾“å…¥è¾“å‡ºçŸ©é˜µ %%%%%%%%%%%%%%%%%%%
 train_x=zeros(trainingLength,inputSize);
 train_y=zeros(trainingLength,outputSize);
 for i=1:trainingLength
@@ -124,7 +124,7 @@ end
 
 subtrain_x=train_x(index,:);
 subtrain_y=train_y(index,:);
-%%%%%%%%%%%%%%%%%%%%%% ÑµÁ·Deep LSTM %%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%% è®­ç»ƒDeep LSTM %%%%%%%%%%%%%%%%%%%%%%
 Size=[inputSize 30 10 50 outputSize];
 opt.active_funcs={'sigm','tanh_opt'};
 opt.learningRate=1;
@@ -141,17 +141,17 @@ lstm{kSub}.lstmcell{1}.weightPenaltyGroup=0;
 lstm{kSub}.lstmcell{1}.group=3;
 lstm{kSub}=lstmtrain3(lstm{kSub},subtrain_x,subtrain_y,opt);
 
-%%%%%%%%%%%%%%%% »ñÈ¡×ÓÄ£ĞÍ¶ÔÓÚÈ«ÌåÊäÈëÊı¾İµÄÊä³ö%%%%%%%%%%%%
+%%%%%%%%%%%%%%%% è·å–å­æ¨¡å‹å¯¹äºå…¨ä½“è¾“å…¥æ•°æ®çš„è¾“å‡º%%%%%%%%%%%%
 lstm{kSub}=lstmff3(lstm{kSub},train_x,train_y);
 weight=reshape(repmat(u(kSub,:),lag,1),trainingLength,1);
 second_x=[second_x lstm{kSub}.nn.a{end}];
 
 end
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% ×ÓÄ£ĞÍÑµÁ·½áÊø£¬ÑµÁ·»Ø¹é²ã %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% å­æ¨¡å‹è®­ç»ƒç»“æŸï¼Œè®­ç»ƒå›å½’å±‚ %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %second_x=[second_x wx];
 theta=regress(train_y,second_x);
 svr=svmtrain(train_y,second_x,'-s 3 -p 0.01 -q');
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% ²âÊÔ %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% æµ‹è¯• %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 testingBegin=1;
 testingLength=1200;
 wx=air_bj{outputStations}(testingBegin+1+timeDelay+range:testingBegin+testingLength+timeDelay+range,weatherFactors);
@@ -168,10 +168,10 @@ for iLag=1:m
 end
 second_x=[];
 
-%%%%%%%%%%%%%%%%%%%%%%%% ×ÓÄ£ĞÍ %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%% å­æ¨¡å‹ %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 for kSub=1:K
 
-%%%%%%%%%%%%%%%%%%%% ¹¹Ôì²âÊÔÊäÈëÊä³ö¾ØÕó %%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%% æ„é€ æµ‹è¯•è¾“å…¥è¾“å‡ºçŸ©é˜µ %%%%%%%%%%%%%%%%%%%
 test_x=zeros(testingLength,inputSize);
 test_y=zeros(testingLength,outputSize);
 for i=testingBegin+1:testingBegin+testingLength
@@ -208,17 +208,17 @@ for i=testingBegin+1:testingBegin+testingLength
     test_y(i-testingBegin,1)=air_bj{outputStations}(i+range+timeDelay,outputPolluents);   
 end
 
-%%%%%%%%%%%%%%%%%%%%%% ¼ÆËã²âÊÔ¼¯½á¹û %%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%% è®¡ç®—æµ‹è¯•é›†ç»“æœ %%%%%%%%%%%%%%%%%%%%%%%
 lstm{kSub}=lstmff3(lstm{kSub},test_x,test_y);
 weight=reshape(repmat(v(kSub,:),lag,1),testingLength,1);
 second_x=[second_x lstm{kSub}.nn.a{end}];
 
 end
-%%%%%%%%%%%%%%%%%%%%%%% ²âÊÔ¼¯»Ø¹é %%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%% æµ‹è¯•é›†å›å½’ %%%%%%%%%%%%%%%%%%%%%%%%%%
 %second_x=[second_x wx];
 py1=second_x*theta;
 [py2,mse,dec]=svmpredict(test_y,second_x,svr);
-%%%%%%%%%%%%%%%%%%%%%%%% Îó²î¼ÆËã %%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%% è¯¯å·®è®¡ç®— %%%%%%%%%%%%%%%%%%%%%%%%%%%
 e1=py1-test_y;
 mae1=mean(abs(e1))*500;
 acc1=1-sum(abs(e1))/sum(abs(test_y));
@@ -237,7 +237,7 @@ acc2=1-sum(abs(e2))/sum(abs(test_y));
 mae2
 acc2
 %}
-%%%%%%%%%%%%%%%% ±£´æ½á¹û %%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%% ä¿å­˜ç»“æœ %%%%%%%%%%%%%%%%%%%
 result(count).station=outputStations;
 result(count).timeDelay=timeDelay;
 result(count).mae1=mae1;

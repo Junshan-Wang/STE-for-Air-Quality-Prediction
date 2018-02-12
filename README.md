@@ -1,6 +1,5 @@
 ## STE Model for Air Quality Prediction
 
--------------
 
 Implement a novel and effective spatial-temporal ensemble model for air quality prediction. 
 

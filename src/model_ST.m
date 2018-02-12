@@ -4,9 +4,9 @@ clc;
 load air_bj.mat;
 %%%%%%%%%%%%%%%%%%%%%%
 numTimeDelay=[5];
-inputPolluents=[1 2 3 4 5];     %ÊäÈë¹ıÈ¥ÎÛÈ¾ÎïÊı¾İ
-outputPolluents=6;                  %Êä³öPM2.5
-weatherFactors=[7 8 9 10];      %ÊäÈëÎ´À´ÌìÆøÔ¤²â
+inputPolluents=[1 2 3 4 5];     %è¾“å…¥è¿‡å»æ±¡æŸ“ç‰©æ•°æ®
+outputPolluents=6;                  %è¾“å‡ºPM2.5
+weatherFactors=[7 8 9 10];      %è¾“å…¥æœªæ¥å¤©æ°”é¢„æµ‹
 
 count=1;
 for iTimeDelay=1:length(numTimeDelay)
@@ -14,7 +14,7 @@ for iStation=1:35
 outputStations=iStation
 timeDelay=numTimeDelay(iTimeDelay);  
 range=timeDelay+1;
-%%%%%%%%%%%%%%%%% »ñµÃÏà¹ØÕ¾µã %%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%% è·å¾—ç›¸å…³ç«™ç‚¹ %%%%%%%%%%%%%
 Kernel=zeros(35,1);
 for i=1:35
 	%Kernel(i)=abs(pdist2(air_bj{outputStations}(:,6)',air_bj{i}(:,outputPolluents)','correlation'));
@@ -26,7 +26,7 @@ adjMatrix=zeros(35,adj);
 [a,b]=sort(Kernel);
 adjMatrix(outputStations,:)=b(1:adj);
 
-%%%%%%%%%%%%%%%%%% Ïà¹ØÇøÓò %%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%% ç›¸å…³åŒºåŸŸ %%%%%%%%%%%%%%%%%%
 numDir=4;
 fStatistic=zeros(35,length(weatherFactors)+1);
 for k=1:35
@@ -48,14 +48,14 @@ for i=1:numDir
     end
 end
 
-%%%%%%%%%%%%%%%%% Ô¤²â¶àÉÙÌìÒÔºó %%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%% é¢„æµ‹å¤šå°‘å¤©ä»¥å %%%%%%%%%%%%%%%%%%%%
 
 inputSize=range*length(inputPolluents)+range*length(outputPolluents)*adj+3*adj*length(weatherFactors)+numDir*(range*length(outputPolluents)+length(weatherFactors));    
 outputSize=1;
 
 trainingLength=2400;
 
-%%%%%%%%%%%%%%%%%%% ¹¹ÔìÊäÈëÊä³ö¾ØÕó %%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%% æ„é€ è¾“å…¥è¾“å‡ºçŸ©é˜µ %%%%%%%%%%%%%%%%%%%%%%
 train_x=zeros(trainingLength,inputSize);
 train_y=zeros(trainingLength,outputSize);
 for i=1:trainingLength
@@ -93,7 +93,7 @@ for i=1:trainingLength
     train_y(i,1)=air_bj{outputStations}(i+range+timeDelay,outputPolluents);    
 end
 
-%%%%%%%%%%%%%%%%%%%%%% ËùÓĞÑµÁ·¼¯ÑµÁ·Éñ¾­ÍøÂç %%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%% æ‰€æœ‰è®­ç»ƒé›†è®­ç»ƒç¥ç»ç½‘ç»œ %%%%%%%%%%%%%%%%%%%%%%%%%%
 Size=[inputSize 30 10 10 outputSize];
 
 opt.active_funcs={'sigm','tanh_opt'};
@@ -116,7 +116,7 @@ lstm=lstmtrain3(lstm,train_x,train_y,opt);
 
 lstm=lstmff3(lstm,train_x,train_y);
 
-%%%%%%%%%%%%%%%%%%%%%% ¹¹Ôì²âÊÔ¼¯ %%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%% æ„é€ æµ‹è¯•é›† %%%%%%%%%%%%%%%%%%%%%%%%
 testingLength=240;
 test_x=zeros(testingLength,inputSize);
 test_y=zeros(testingLength,outputSize);
@@ -154,19 +154,19 @@ for i=trainingLength+1:trainingLength+testingLength
     test_y(i-trainingLength,1)=air_bj{outputStations}(i+range+timeDelay,outputPolluents);   
 end
 
-%%%%%%%%%%%%%%%%%% ¼ÆËã²âÊÔ¼¯½á¹û %%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%% è®¡ç®—æµ‹è¯•é›†ç»“æœ %%%%%%%%%%%%%%%%%%%
 
 lstm=lstmff3(lstm,test_x,test_y);
 py1=lstm.nn.a{end};
 
-%%%%%%%%%%%%%%% Îó²î¼ÆËã %%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%% è¯¯å·®è®¡ç®— %%%%%%%%%%%%%%%%
 e1=py1-test_y;
 mae1=mean(abs(e1))*500;
 acc1=1-sum(abs(e1))/sum(abs(test_y));
 mae1
 acc1
 
-%%%%%%%%%%%%%%%% ±£´æ½á¹û %%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%% ä¿å­˜ç»“æœ %%%%%%%%%%%%%%%%%%%
 result(count).station=outputStations;
 result(count).timeDelay=timeDelay;
 result(count).mae1=mae1;
